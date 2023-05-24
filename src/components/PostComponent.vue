@@ -4,10 +4,11 @@
             <div class="profile" :style="{backgroundImage : `url(${userPost.userImage})`}"></div>
             <span class="profile-name">{{userPost.name}}</span>
         </div>
-        <div class="post-body" :style="{backgroundImage : `url(${userPost.postImage})`}"></div>
+        <div class="post-body" @dblclick="$store.commit('likePost', postNumber)"
+        :style="{backgroundImage : `url(${userPost.postImage})`}" :class="userPost.filter"></div>
         <div class="post-content">
-            <p>{{userPost.likes}}</p>
-            <p><strong>{{userPost.name}}</strong>{{userPost.content}}</p>
+            <p>{{userPost.likes}} Likes</p>
+            <p><strong>{{userPost.name}}</strong>  {{userPost.content}}</p>
             <p class="date">{{userPost.date}}</p>
         </div>
     </div>
@@ -16,7 +17,8 @@
 <script>
 export default {
     props: {
-        userPost : Object,
+        userPost: Object,
+        postNumber: Number
     }
 }
 </script>

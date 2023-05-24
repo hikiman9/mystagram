@@ -1,41 +1,60 @@
 <template>
   <div class="header">
-    <ul class="header-button-left">
+    <ul class="header-button-left" v-if="containerState > 0" @click="$store.commit('toHome')">
       <li>Cancel</li>
     </ul>
-    <ul class="header-button-right">
+    <ul class="header-button-right" v-if="containerState == 1" @click="$store.commit('toTextarea')">
       <li>Next</li>
+    </ul>
+    <ul class="header-button-right" v-if="containerState == 2" @click="$store.commit('publish')">
+      <li>Post</li>
     </ul>
     <img src="./assets/logo.png" class="logo" />
   </div>
 
-  <ContainerComponent/>
+  <ContainerComponent />
 
   <div class="footer">
     <ul class="footer-button-plus">
-      <input type="file" id="file" class="inputfile" />
-      <label for="file" class="input-plus">+</label>
+      <input @change='selectFile' type="file" id="file" class="inputfile" />
+      <label v-if="containerState == 0" for="file" class="input-plus">+</label>
     </ul>
   </div>
 
-  <button @click="morePost">더보기</button>
+  <button v-if="(jsonNumber < 2) & (containerState == 0)" @click="morePost">더보기</button>
 </template>
 
 <script>
 
+import { mapState } from 'vuex';
 import ContainerComponent from './components/ContainerComponent.vue';
 import axios from 'axios'
 
 export default {
   name: 'App',
+  data() {
+    return {
+      jsonNumber: 0,
+    }
+  },
+  computed: {
+    ...mapState(['containerState'])
+  },
   components: {
     ContainerComponent,
   },
   methods: {
-    morePost(){
-      axios.get(`https://codingapple1.github.io/vue/more0.json`).then((a)=>{
+    morePost() {
+      axios.get(`https://codingapple1.github.io/vue/more${this.jsonNumber}.json`).then((a) => {
         this.$store.commit('pushPost', a.data)
+        this.jsonNumber++;
       })
+    },
+    selectFile(e){
+      let fileSelected = e.target.files;
+      let url = URL.createObjectURL(fileSelected[0]);
+      this.$store.commit('imageUrlChange', url);
+      this.$store.commit('toFilterSelect')
     }
   },
 }
@@ -128,4 +147,5 @@ ul {
   position: relative;
   border-right: 1px solid #eee;
   border-left: 1px solid #eee;
-}</style>
+}
+</style>
